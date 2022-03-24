@@ -86,7 +86,7 @@ router.post("/login", async (req, res) => {
 router.get("/auth-locked", requiresToken, (req, res) => {
   // here we have access to user
   console.log("logged in user", res.locals.user);
-  res, json({ msg: "bienvenidos!" });
+  res.json({ msg: "bienvenidos!" });
 });
 
 module.exports = router;
