@@ -12,7 +12,7 @@ const CommentSchema = new mongoose.Schema(
 
 const PhotoSchema = new mongoose.Schema(
   {
-    url: String,
+    public_id: String,
     caption: String,
     comments: [CommentSchema],
   },
