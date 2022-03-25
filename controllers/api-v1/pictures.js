@@ -1,14 +1,15 @@
 const express = require("express");
 const router = express.Router();
 const multer = require("multer");
+const requiresToken = require('./requiresToken')
 
 const cloudinary = require("cloudinary").v2;
 
-const { unLinkSync } = require("fs");
+const { unlinkSync } = require("fs");
 
 const newPics = multer({ dest: "uploads/" });
 
-router.post("/", newPics.single("image"), async (req, res) => {
+router.post("/", newPics.single("image"), requiresToken, async (req, res) => {
   try {
     if (!req.file) return res.status(400).json({ msg: "no file uploaded" });
     const cloudinaryImageData = await cloudinary.uploader.upload(req.file.path);
@@ -16,17 +17,17 @@ router.post("/", newPics.single("image"), async (req, res) => {
     const foundUser = res.locals.user;
     // const cloudImage = `https://res.cloudinary.com/dhs1wrqhp/image/upload/v1593119998/${cloudImageData.public_id}.png`;
     foundUser.photos.push({
-      public_id: cloudImageData.public_id,
+      public_id: cloudinaryImageData.public_id,
       caption: req.body.caption,
     });
     await foundUser.save();
-    unLinkSync(req.file.path);
+    unlinkSync(req.file.path);
     // res.json({ cloudImage });
     res.status(201).json({ msg: "image posted to db" });
   } catch (err) {
-    console.log(
-      err.status(503).json({ msg: "you should look at the server console" })
-    );
+    console.log(err)
+    res.status(503).json({ msg: "you should look at the server console" })
+  
   }
 });
 
