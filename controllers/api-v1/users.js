@@ -15,7 +15,7 @@ router.post("/register", async (req, res) => {
 
     if (userCheck)
       return res.status(409).json({
-        msg: "did you forget that you already signed up w that email?",
+        msg: "user already exists",
       });
     // hash the pass
     const salt = 12;
@@ -40,7 +40,7 @@ router.post("/register", async (req, res) => {
     res.json({ token });
   } catch (err) {
     console.log(err);
-    res.status(503).json({ msg: "SERVER DONE!" });
+    res.status(503).json({ msg: "server error" });
   }
 });
 
@@ -54,7 +54,7 @@ router.post("/login", async (req, res) => {
     // if the user isn't found -- send a message back
     if (!foundUser)
       return res.status(400).json({
-        msg: "bad login credentials",
+        msg: "invalid login credentials",
       });
     // check the req.body against the password i the db
     const matchedPasswords = await bcrypt.compare(
@@ -64,7 +64,7 @@ router.post("/login", async (req, res) => {
     console.log(matchedPasswords);
     // if the provided info does not match -- send back an error and return
     if (!matchedPasswords)
-      return req.status(400).json({ msg: "bad login credentials" });
+      return req.status(400).json({ msg: "invalid login credentials" });
     // create a jwt payload
     const payload = {
       name: foundUser.name,
