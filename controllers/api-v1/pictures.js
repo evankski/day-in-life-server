@@ -9,7 +9,7 @@ const { unLinkSync } = require("fs");
 
 const newPics = multer({ dest: "/pictures" });
 
-router.post("/pictures", newPics.single("image"), async (req, res) => {
+router.post("/", newPics.single("image"), async (req, res) => {
   try {
     if (!req.file) return res.status(400).json({ msg: "no file uploaded" });
     const cloudinaryImageData = await cloudinary.uploader.upload(req.file.path);
@@ -26,7 +26,7 @@ router.post("/pictures", newPics.single("image"), async (req, res) => {
   }
 });
 
-router.get("/pictures/:id", async (req, res) => {
+router.get("/:id", async (req, res) => {
   try {
     console.log(await db.photo.findOne());
     const photos = await db.photo.findOne({
@@ -38,7 +38,7 @@ router.get("/pictures/:id", async (req, res) => {
   }
 });
 
-router.put("/pictures/:id", async (req, res) => {
+router.put("/:id", async (req, res) => {
   try {
     console.log(await db.photo.findOne());
     const pictures = await db.photo.caption.updateOne({});
@@ -48,7 +48,7 @@ router.put("/pictures/:id", async (req, res) => {
   }
 });
 
-router.delete("/pictures/:id", async (req, res) => {
+router.delete("/:id", async (req, res) => {
   try {
     console.log(await db.photo.findOne());
     const pictures = await db.photo.remove({});
