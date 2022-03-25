@@ -63,8 +63,7 @@ router.post("/login", async (req, res) => {
     );
     console.log(matchedPasswords);
     // if the provided info does not match -- send back an error and return
-    if (!matchedPasswords)
-      return req.status(400).json({ msg: "invalid login credentials" });
+    if (!matchedPasswords) return res.status(400).json({ msg: "invalid login credentials" });
     // create a jwt payload
     const payload = {
       name: foundUser.name,
