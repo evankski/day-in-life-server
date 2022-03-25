@@ -26,7 +26,7 @@ const UserSchema = new mongoose.Schema({
   email: String,
   password: String,
   profile_url: String,
-  photo: [PhotoSchema],
+  photos: [PhotoSchema],
 });
 
 module.exports = mongoose.model("User", UserSchema);
