@@ -16,13 +16,9 @@ const middleWare = (req, res, next) => {
 };
 
 app.get("/", (req, res) => {
-  res.json({ msg: "welcome to the user app 👋" });
+  res.json({ msg: "welcome to the app" });
 });
 
 app.use("/api-v1/users", require("./controllers/api-v1/users"));
 
-app.listen(PORT, () =>
-  console.log(
-    `listening to the smooth sounds of port ${PORT} in the morning 🌊`
-  )
-);
+app.listen(PORT, () => console.log(`connected to port ${PORT}`));

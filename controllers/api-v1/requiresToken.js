@@ -18,9 +18,7 @@ async function requiresToken(req, res, next) {
   } catch (err) {
     // if we are down here -- authentication has fail
     console.log(err);
-    res
-      .status(401)
-      .json({ msg: "you are not allowed to be here, move along now" });
+    res.status(401).json({ msg: "unauthorized" });
   }
 }
 
