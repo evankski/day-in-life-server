@@ -16,6 +16,19 @@ router.get('/', async (req, res) => {
   }
 })
 
+// GET /users/:id -- READ user document with :id and its subdocs
+router.get('/:id', requiresToken, async (req,res) => {
+  try {
+    const foundUser = await db.User.findById(req.params.id)
+    // console.log(foundUser)
+    if(!foundUser) return res.status(404).json({ msg: 'user not found'})
+    res.json(foundUser)
+  } catch (err) {
+    console.log(err)
+    res.status(503).json({ msg: "server error" });
+  }
+})
+
 //POST /users/register -- CREATE a new user
 router.post("/register", async (req, res) => {
   try {
