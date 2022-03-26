@@ -35,6 +35,7 @@ router.post("/", newPics.single("image"), requiresToken, async (req, res) => {
 router.get("/:id", requiresToken, async (req, res) => {
   try {
     const foundUser = await db.User.findOne({
+: "database or server error" });
       'photos._id': req.params.id,
   })
     const foundPhoto = foundUser.photos.id(req.params.id)
@@ -49,34 +50,34 @@ router.get("/:id", requiresToken, async (req, res) => {
 router.put("/:id", requiresToken, async (req, res) => {
   try {
     const foundUser = await db.User.findOne({
-      "photos._id": req.body.photoId,
+      "photos._id": req.params.id,
     });
-    const foundPhoto = foundUser.photos.id(req.body.photoId);
-    if (req.body.user_id === res.locals.user.id) {
-      foundPhoto.findAndUpdate({
-        caption: req.body.caption,
-      });
+    const foundPhoto = foundUser.photos.id(req.params.id);
+    if (foundUser.id === res.locals.user.id) {
+      foundPhoto.caption = req.body.caption;
       await foundUser.save();
-    }
-    res.status(200).json({ msg: "the caption has been updated" });
+      res.status(200).json(foundUser);
+    } else res.json({ msg: "invalid action" });
   } catch (err) {
     console.log(err);
+    res.status(503).json({ msg: "database or server error" });
   }
 });
 
 router.delete("/:id", requiresToken, async (req, res) => {
   try {
     const foundUser = await db.User.findOne({
-      "photos._id": req.body.photoId,
+      "photos._id": req.params.id,
     });
-    const foundPhoto = foundUser.photos.id(req.body.photoId);
-    if (req.body.user_id === res.locals.user.id) {
+    const foundPhoto = foundUser.photos.id(req.params.id);
+    if (foundUser.id === res.locals.user.id) {
       foundPhoto.remove();
       await foundUser.save();
       res.status(200).json({ msg: "photo successfully deleted" });
     } else res.json({ msg: "invalid action" });
   } catch (err) {
     console.log(err);
+    res.status(503).json({ msg: "database or server error" });
   }
 });
 
