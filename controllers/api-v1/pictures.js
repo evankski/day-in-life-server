@@ -27,7 +27,6 @@ router.post("/", newPics.single("image"), requiresToken, async (req, res) => {
     // res.json({ cloudImage });
     res.status(201).json({ msg: "image posted to db" });
   } catch (err) {
-
     console.log(err);
     res.status(503).json({ msg: "you should look at the server console" });
   }
@@ -35,9 +34,8 @@ router.post("/", newPics.single("image"), requiresToken, async (req, res) => {
 
 router.get("/:id", async (req, res) => {
   try {
-    const photId = await db.user.photos.public_id;
-    const cloudImage = `https://res.cloudinary.com/dhs1wrqhp/image/upload/v1593119998/${photId}.png`;
-    res.status(200).json({ cloudImage });
+    const foundPhoto = await db.users.photos.findById(req.params._id);
+    res.status(200).json({ foundPhoto });
   } catch (err) {
     console.log(err);
   }
@@ -45,12 +43,17 @@ router.get("/:id", async (req, res) => {
 
 router.put("/:id", requiresToken, async (req, res) => {
   try {
+    const foundUser = await db.User.findOne({
+      "photos._id": req.body.photoId,
+    });
+    const foundPhoto = foundUser.photos.id(req.body.photoId);
     if (req.body.user_id === res.locals.user.id) {
-      const photo = await db.users.photos.findOneAndUpdate({
+      foundPhoto.findAndUpdate({
         caption: req.body.caption,
       });
+      await foundUser.save();
     }
-    res.status(202).json({ msg: "the caption has been updated" });
+    res.status(200).json({ msg: "the caption has been updated" });
   } catch (err) {
     console.log(err);
   }
@@ -58,9 +61,15 @@ router.put("/:id", requiresToken, async (req, res) => {
 
 router.delete("/:id", requiresToken, async (req, res) => {
   try {
+    const foundUser = await db.User.findOne({
+      "photos._id": req.body.photoId,
+    });
+    const foundPhoto = foundUser.photos.id(req.body.photoId);
     if (req.body.user_id === res.locals.user.id) {
-      const photo = await db.users.photos.remove({});
-    }
+      foundPhoto.remove();
+      await foundUser.save();
+      res.status(200).json({ msg: "photo successfully deleted" });
+    } else res.json({ msg: "invalid action" });
   } catch (err) {
     console.log(err);
   }
