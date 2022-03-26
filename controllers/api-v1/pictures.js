@@ -7,7 +7,7 @@ const cloudinary = require("cloudinary").v2;
 
 const { unlinkSync } = require("fs");
 
-const { db } = require("../../models/user");
+const db = require("../../models");
 
 const newPics = multer({ dest: "uploads/" });
 
@@ -32,46 +32,51 @@ router.post("/", newPics.single("image"), requiresToken, async (req, res) => {
   }
 });
 
-router.get("/:id", async (req, res) => {
+router.get("/:id", requiresToken, async (req, res) => {
   try {
-    const foundPhoto = await db.users.photos.findById(req.params._id);
-    res.status(200).json({ foundPhoto });
+    const foundUser = await db.User.findOne({
+      "photos._id": req.params.id,
+    });
+    const foundPhoto = await foundUser.photos.id(req.params.id);
+    console.log(foundPhoto);
+    res.status(200).json(foundPhoto);
   } catch (err) {
     console.log(err);
+    res.status(503).json({ msg: "database or server error" });
   }
 });
 
 router.put("/:id", requiresToken, async (req, res) => {
   try {
     const foundUser = await db.User.findOne({
-      "photos._id": req.body.photoId,
+      "photos._id": req.params.id,
     });
-    const foundPhoto = foundUser.photos.id(req.body.photoId);
-    if (req.body.user_id === res.locals.user.id) {
-      foundPhoto.findAndUpdate({
-        caption: req.body.caption,
-      });
+    const foundPhoto = foundUser.photos.id(req.params.id);
+    if (foundUser.id === res.locals.user.id) {
+      foundPhoto.caption = req.body.caption;
       await foundUser.save();
-    }
-    res.status(200).json({ msg: "the caption has been updated" });
+      res.status(200).json(foundUser);
+    } else res.json({ msg: "invalid action" });
   } catch (err) {
     console.log(err);
+    res.status(503).json({ msg: "database or server error" });
   }
 });
 
 router.delete("/:id", requiresToken, async (req, res) => {
   try {
     const foundUser = await db.User.findOne({
-      "photos._id": req.body.photoId,
+      "photos._id": req.params.id,
     });
-    const foundPhoto = foundUser.photos.id(req.body.photoId);
-    if (req.body.user_id === res.locals.user.id) {
+    const foundPhoto = foundUser.photos.id(req.params.id);
+    if (foundUser.id === res.locals.user.id) {
       foundPhoto.remove();
       await foundUser.save();
       res.status(200).json({ msg: "photo successfully deleted" });
     } else res.json({ msg: "invalid action" });
   } catch (err) {
     console.log(err);
+    res.status(503).json({ msg: "database or server error" });
   }
 });
 
