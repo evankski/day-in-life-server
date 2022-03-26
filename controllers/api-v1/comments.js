@@ -43,10 +43,20 @@ router.put('/:id', requiresToken, async (req, res) => {
 // DELETE /comments/:id -- DELETE a comment with :id
 router.delete('/:id', requiresToken, async (req, res) => {
     try {
-
+        const foundUser = await db.User.findOne({
+            'photos._id': req.body.photoId,
+        })
+        const foundPhoto = foundUser.photos.id(req.body.photoId)
+        const foundComment = foundPhoto.comments.id(req.params.id)
+        if(res.locals.user.id === foundComment.user_id) {
+            foundComment.remove()
+            await foundUser.save()
+            res.status(200).json({ msg: 'comment successfully deleted' })
+        } else res.json({ msg: 'invalid action' })
 
     } catch (err) {
         console.log(err)
+        res.status(503).json({ msg: 'database or server error'})
     }
 })
 
