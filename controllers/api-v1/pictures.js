@@ -35,14 +35,15 @@ router.post("/", newPics.single("image"), requiresToken, async (req, res) => {
 router.get("/:id", requiresToken, async (req, res) => {
   try {
     const foundUser = await db.User.findOne({
-      "photos._id": req.params.id,
-    });
-    const foundPhoto = await foundUser.photos.id(req.params.id);
-    console.log(foundPhoto);
-    res.status(200).json(foundPhoto);
+: "database or server error" });
+      'photos._id': req.params.id,
+  })
+    const foundPhoto = foundUser.photos.id(req.params.id)
+    console.log(foundPhoto)
+    res.status(200).json(foundPhoto)
   } catch (err) {
     console.log(err);
-    res.status(503).json({ msg: "database or server error" });
+    res.status(503).json({msg: 'database or server error'})
   }
 });
 
