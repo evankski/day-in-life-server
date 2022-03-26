@@ -3,14 +3,15 @@ const router = express.Router()
 const db = require('../../models')
 const requiresToken = require('./requiresToken')
 
-router.post('/', async (req, res) => {
+// POST /comments -- CREATE a new comment
+router.post('/', requiresToken, async (req, res) => {
     try {
         const foundUser = await db.User.findOne({
             'photos._id': req.body.photoId,
         })
-        console.log(foundUser)
+        // console.log(foundUser)
         const foundPhoto = foundUser.photos.id(req.body.photoId)
-        console.log(foundPhoto)
+        // console.log(foundPhoto)
         foundPhoto.comments.push(req.body)
         await foundUser.save()
         res.status(201).json(foundUser)
@@ -20,9 +21,10 @@ router.post('/', async (req, res) => {
     }
 })
 
+// PUT /comments/:id -- UPDATE a comment with :id
 router.put('/:id', requiresToken, async (req, res) => {
     try {
-        if(req.body.photoId === res.locals.user.id) {
+        if(req.body.user_id === res.locals.user.id) {
 
         }
     } catch (err) {
@@ -30,9 +32,12 @@ router.put('/:id', requiresToken, async (req, res) => {
     }
 })
 
+// DELETE /comments/:id -- DELETE a comment with :id
 router.delete('/:id', requiresToken, async (req, res) => {
     try {
+        if(req.body.user_id === res.locals.user.id) {
 
+        }
     } catch (err) {
         console.log(err)
     }

@@ -5,7 +5,7 @@ const bcrypt = require("bcrypt");
 const db = require("../../models");
 const requiresToken = require("./requiresToken");
 
-// GET /users/ -- READ all users and their subdocs
+// GET /users -- READ all users and their subdocs
 router.get('/', async (req, res) => {
   try{
     const allUsers = await db.User.find({})
