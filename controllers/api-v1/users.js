@@ -5,6 +5,17 @@ const bcrypt = require("bcrypt");
 const db = require("../../models");
 const requiresToken = require("./requiresToken");
 
+// GET /users -- READ all users and their subdocs
+router.get('/', async (req, res) => {
+  try{
+    const allUsers = await db.User.find({})
+    res.json(allUsers)
+  } catch (err) {
+    console.log(err)
+    res.status(503).json({ msg: "server error" });
+  }
+})
+
 //POST /users/register -- CREATE a new user
 router.post("/register", async (req, res) => {
   try {

@@ -4,6 +4,7 @@ const CommentSchema = new mongoose.Schema(
   {
     name: String,
     content: String,
+    user_id: String,
   },
   {
     timestamps: true,

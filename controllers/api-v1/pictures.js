@@ -6,6 +6,7 @@ const requiresToken = require("./requiresToken");
 const cloudinary = require("cloudinary").v2;
 
 const { unlinkSync } = require("fs");
+
 const { db } = require("../../models/user");
 
 const newPics = multer({ dest: "uploads/" });
@@ -26,6 +27,7 @@ router.post("/", newPics.single("image"), requiresToken, async (req, res) => {
     // res.json({ cloudImage });
     res.status(201).json({ msg: "image posted to db" });
   } catch (err) {
+
     console.log(err);
     res.status(503).json({ msg: "you should look at the server console" });
   }
