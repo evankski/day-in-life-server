@@ -14,7 +14,7 @@ router.post('/', requiresToken, async (req, res) => {
         // console.log(foundPhoto)
         foundPhoto.comments.push(req.body)
         await foundUser.save()
-        res.status(201).json(foundUser)
+        res.status(201).json({updatedUser:foundUser, commenter: res.locals.user.name})
     } catch (err) {
         console.log(err)
         res.status(503).json({ msg: 'database or server error'})

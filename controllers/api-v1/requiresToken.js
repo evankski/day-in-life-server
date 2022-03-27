@@ -8,7 +8,7 @@ async function requiresToken(req, res, next) {
 
     // verify the token -- if not verified will wind up in catch
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    console.log(decoded);
+    // console.log(decoded);
     // find the user from the data in the token
     const foundUser = await db.User.findById(decoded.id); //.populate('refs')
     // mount the user on the response for the next middle/route
