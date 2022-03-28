@@ -39,7 +39,7 @@ router.get("/:id", requiresToken, async (req, res) => {
   })
     const foundPhoto = foundUser.photos.id(req.params.id)
     // console.log(foundPhoto)
-    res.status(200).json(foundPhoto)
+    res.status(200).json({foundPhoto, ownerId: foundUser._id})
   } catch (err) {
     console.log(err);
     res.status(503).json({msg: 'database or server error'})
