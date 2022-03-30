@@ -37,7 +37,7 @@ router.post('/preview', newPics.single('image'), requiresToken, async (req, res)
     if (!req.file) return res.status(400).json({ msg: "no file uploaded" });
     const cloudinaryImageData = await cloudinary.uploader.upload(req.file.path);
     console.log(cloudinaryImageData);
-    const cloudImage = `https://res.cloudinary.com/dhs1wrqhp/image/upload/${cloudinaryImageData.public_id}.png`;
+    const cloudImage = `https://res.cloudinary.com/dhs1wrqhp/image/upload/f_auto,q_20/${cloudinaryImageData.public_id}.png`;
     unlinkSync(req.file.path);
     res.json({ cloudImage });
   } catch (err) {
