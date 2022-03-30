@@ -28,9 +28,23 @@ router.post("/", newPics.single("image"), requiresToken, async (req, res) => {
     res.status(201).json({ msg: "image posted to db" });
   } catch (err) {
     console.log(err);
-    res.status(503).json({ msg: "you should look at the server console" });
+    res.status(503).json({ msg: "database or server error" });
   }
 });
+
+router.post('/preview', newPics.single('image'), requiresToken, async (req, res) => {
+  try {
+    if (!req.file) return res.status(400).json({ msg: "no file uploaded" });
+    const cloudinaryImageData = await cloudinary.uploader.upload(req.file.path);
+    console.log(cloudinaryImageData);
+    const cloudImage = `https://res.cloudinary.com/dhs1wrqhp/image/upload/${cloudinaryImageData.public_id}.png`;
+    unlinkSync(req.file.path);
+    res.json({ cloudImage });
+  } catch (err) {
+    console.log(err);
+    res.status(503).json({ msg: "database or server error" });
+  }
+})
 
 router.get("/:id", requiresToken, async (req, res) => {
   try {
