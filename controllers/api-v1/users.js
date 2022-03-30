@@ -4,30 +4,35 @@ const jwt = require("jsonwebtoken");
 const bcrypt = require("bcrypt");
 const db = require("../../models");
 const requiresToken = require("./requiresToken");
+const multer = require("multer");
+const cloudinary = require("cloudinary").v2;
+const { unlinkSync } = require("fs");
+const newPics = multer({ dest: "uploads/" });
 
 // GET /users -- READ all users and their subdocs
-router.get('/', async (req, res) => {
-  try{
-    const allUsers = await db.User.find({})
-    res.json(allUsers)
+router.get("/", async (req, res) => {
+  try {
+    const allUsers = await db.User.find({});
+    res.json(allUsers);
   } catch (err) {
-    console.log(err)
+    console.log(err);
     res.status(503).json({ msg: "server error" });
   }
-})
+});
 
 // GET /users/:id -- READ user document with :id and its subdocs
-router.get('/:id', requiresToken, async (req,res) => {
+router.get("/:id", requiresToken, async (req, res) => {
+  console.log(req.params);
   try {
-    const foundUser = await db.User.findById(req.params.id)
+    const foundUser = await db.User.findById(req.params.id);
     // console.log(foundUser)
-    if(!foundUser) return res.status(404).json({ msg: 'user not found'})
-    res.json(foundUser)
+    if (!foundUser) return res.status(404).json({ msg: "user not found" });
+    res.json(foundUser);
   } catch (err) {
-    console.log(err)
+    console.log(err);
     res.status(503).json({ msg: "server error" });
   }
-})
+});
 
 //POST /users/register -- CREATE a new user
 router.post("/register", async (req, res) => {
@@ -103,6 +108,23 @@ router.post("/login", async (req, res) => {
     res.json({ token });
   } catch (err) {
     console.log(err);
+  }
+});
+
+router.put("/:id", newPics.single("image"), requiresToken, async (req, res) => {
+  try {
+    if (!req.file) return res.status(400).json({ msg: "no file uploaded" });
+    const cloudinaryImageData = await cloudinary.uploader.upload(req.file.path);
+    console.log(cloudinaryImageData);
+    await db.User.findByIdAndUpdate(req.params.id, {
+      profile_url: cloudinaryImageData.public_id,
+    });
+    unlinkSync(req.file.path);
+    // res.json({ cloudImage });
+    res.status(201).json({ msg: "upload success" });
+  } catch (err) {
+    console.log(err);
+    res.status(503).json({ msg: "you should look at the server console" });
   }
 });
 
