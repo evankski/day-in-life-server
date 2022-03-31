@@ -111,6 +111,7 @@ router.post("/login", async (req, res) => {
   }
 });
 
+// PUT /users/:id -- UPDATE user profile photo
 router.put("/:id", newPics.single("image"), requiresToken, async (req, res) => {
   try {
     if (!req.file) return res.status(400).json({ msg: "no file uploaded" });
@@ -125,6 +126,18 @@ router.put("/:id", newPics.single("image"), requiresToken, async (req, res) => {
   } catch (err) {
     console.log(err);
     res.status(503).json({ msg: "you should look at the server console" });
+  }
+});
+
+// GET /users/:id -- DESTROY user document with :id and its subdocs
+router.delete("/:id", requiresToken, async (req, res) => {
+  try {
+    const foundUser = await db.User.findOne({ "users._id": req.params.id });
+    foundUser.remove();
+    res.status(200).json({ msg: "user successfully deleted" });
+  } catch (err) {
+    console.log(err);
+    res.status(503).json({ msg: "database or server error" });
   }
 });
 
