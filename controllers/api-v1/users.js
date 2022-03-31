@@ -111,7 +111,6 @@ router.post("/login", async (req, res) => {
   }
 });
 
-// PUT /users/:id -- UPDATE user profile pic
 router.put("/:id", newPics.single("image"), requiresToken, async (req, res) => {
   try {
     if (!req.file) return res.status(400).json({ msg: "no file uploaded" });
@@ -125,21 +124,7 @@ router.put("/:id", newPics.single("image"), requiresToken, async (req, res) => {
     res.status(201).json({ msg: "upload success" });
   } catch (err) {
     console.log(err);
-    res.status(503).json({ msg: "server error" });
-  }
-});
-
-// DELETE /users/:id -- DESTROY user profile with :id and its subdocs
-router.delete("/:id", requiresToken, async (req, res) => {
-  try {
-    const foundUser = await db.User.findOne({
-      "users._id": req.params.id,
-    });
-    await foundUser.remove();
-    res.status(200).json({ msg: "this user has been deleted" });
-  } catch (err) {
-    console.log(err);
-    res.status(503).json({ msg: "server error" });
+    res.status(503).json({ msg: "you should look at the server console" });
   }
 });
 
