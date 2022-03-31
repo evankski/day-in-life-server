@@ -22,7 +22,7 @@ router.get("/", async (req, res) => {
 
 // GET /users/:id -- READ user document with :id and its subdocs
 router.get("/:id", requiresToken, async (req, res) => {
-  console.log(req.params);
+  // console.log(req.params);
   try {
     const foundUser = await db.User.findById(req.params.id);
     // console.log(foundUser)
@@ -121,7 +121,6 @@ router.put("/:id", newPics.single("image"), requiresToken, async (req, res) => {
       profile_url: cloudinaryImageData.public_id,
     });
     unlinkSync(req.file.path);
-    // res.json({ cloudImage });
     res.status(201).json({ msg: "upload success" });
   } catch (err) {
     console.log(err);
@@ -129,7 +128,7 @@ router.put("/:id", newPics.single("image"), requiresToken, async (req, res) => {
   }
 });
 
-// GET /users/:id -- DESTROY user document with :id and its subdocs
+// DELETE /users/:id -- DESTROY user document with :id and its subdocs
 router.delete("/:id", requiresToken, async (req, res) => {
   try {
     const foundUser = await db.User.findOne({ "users._id": req.params.id });
@@ -139,13 +138,6 @@ router.delete("/:id", requiresToken, async (req, res) => {
     console.log(err);
     res.status(503).json({ msg: "database or server error" });
   }
-});
-
-// GET /users/auth-locked -- example of checking na jwt and not serving datat unless the jwt is valid
-router.get("/auth-locked", requiresToken, (req, res) => {
-  // here we have access to user
-  console.log("logged in user", res.locals.user);
-  res.json({ msg: "bienvenidos!" });
 });
 
 module.exports = router;
